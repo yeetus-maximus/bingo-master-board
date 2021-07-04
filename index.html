@@ -1,10 +1,533 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Bingo</title>
+  <title>E</title>
+  <meta charset="UTF-8">
+  <meta name="description" content="Host and manage Bingo games on the Web">
+  <meta name="author" content="Games by Kai Yang">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="shortcut icon" href="./assets/img/favicon.ico" />
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-title" content="Bingo Board">
+  <link rel="apple-touch-icon" href="./assets/img/appIcon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#d1cc85"/>
+  <link rel="manifest" href="./manifest.json">
+
+  <link rel="stylesheet" href="./assets/css/style.css">
+
 </head>
-<body>
+
+<body onload="init();">
+
+<noscript class="noscript">
+  <div>
+    <p><strong>JavaScript is disabled.</strong></p>
+    <p>Please enable it to use Bingo Master Board.</p>
+  </div>
+</noscript>
+
+<!-- External layers -->
+
+<div class="layer" id="fullScreenToggleLayer">
+  <div class="homeButtonLabel">
+    <div id="homeButton" onclick="hide('masterBoardSlide');show('titleSlide');"></div>
+  </div>
+  <div class="fullScreenToggleBig" id="fullScreenToggle">
+    <div id="fullScreenButton" onclick="toggleFullScreen();"></div>
+    <div id="fullScreenButtonDown" onclick="toggleFullScreen();"></div>
+  </div>
+</div>
+
+<div id="fader">
+</div>
+
+<div class="layer" id="drawBallLayer">
+  <div id="drawBallDiv">
+    <svg width="159" height="120" viewBox="-79.5 -47 159 94">
+      <defs>
+        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:rgba(164,152,92,0.8);"></stop>
+          <stop offset="100%" style="stop-color:rgba(183,174,127,0.8);"></stop>
+        </linearGradient>
+      </defs>
+      <g id="hex" onclick="randomDraw();">
+        <polygon points="-52.5,45 52.5,45 77.5,0 52.5,-45 -52.5,-45 -77.5,0" stroke="rgb(94,87,52)" stroke-width="2">
+        </polygon>
+        <text x="-41" y="-6" fill="#000" font-size="27">DRAW</text>
+        <text x="-33" y="26" fill="#000" font-size="27">BALL</text>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<!-- End -->
+
+<div id="area">
+
+  <div id="titleSlide">
+    <!--Preload bold and italic font-->
+    <div style="position:absolute;">
+      <strong>&nbsp;</strong>
+      <em>&nbsp;</em>
+    </div>
+    <!---->
+    <div class="flexCenter">
+      <div>
+        <div id="title">
+          B I N G O
+        </div>
+        <div id="subheading">
+          Master Board
+        </div>
+        <div id="titleSelection">
+          <div id="howToUse" onclick ="hide('titleSlide');show('howToUseSlide', 'grid');">How to Use</div>
+          <div id="goToMasterBoard" onclick="hide('titleSlide');show('masterBoardSlide', 'grid');">Master Board</div>
+        </div>
+      </div>
+    </div>
+    <div id="copyright">
+      <div id="copyrightLabel" onclick="hide('titleSlide');show('aboutCreditsSlide', 'grid');">Version 3.0.1 ~ ©2018-2021 Games by Siow Kai Yang ~ About/Credits</div>
+    </div>
+  </div>
+
+  <div id="howToUseSlide">
+    <h2>How to Use</h2>
+    <div class="helpNav">
+      <div id="helpNavLine"></div>
+      <div class="helpNavText boldHelp" onclick="navHelp('Basics');" id="howToUseBasicsHeader">Basics</div>
+      <div class="helpNavText" onclick="navHelp('Basics 2');" id="howToUseBasics2Header">Basics 2</div>
+      <div class="helpNavText" onclick="navHelp('Tips & Tricks');" id="howToUseTipsTricksHeader">Tips & Tricks</div>
+      <div class="helpNavText" onclick="navHelp('Thank You');" id="howToUseThanksHeader">Thank You</div>
+    </div>
+    <div class="helpLine"></div>
+    <div class="helpContent">
+      <div class="flexCenter" id="howToUseBasics" style="display:flex;">
+        <div style="text-align:center;">
+          <p style="font-size:26px;"><strong>Bingo Master Board</strong> helps you host and manage your own Bingo games.</p>
+          <p><img src="./assets/img/BingoScreenshot1.png" width="600" style="box-shadow:3px 3px 10px rgba(0,0,0,0.6);"></p>
+          <div style="position:absolute;left:85px;top:270px;font-size:26px;width:200px;">Set the winning Bingo pattern.</div>
+          <div class="helpPointer" style="left:290px;top:320px;width:92px;transform:rotate(10deg);"></div>
+          <div style="position:absolute;left:90px;top:390px;font-size:26px;width:190px;">Randomly draw a Bingo ball.</div>
+          <div class="helpPointer" style="left:290px;top:420px;width:92px;transform:rotate(345deg);"></div>
+          <div style="position:absolute;left:85px;top:510px;font-size:26px;width:200px;">Clear the board for a new game.</div>
+          <div class="helpPointer" style="left:187px;top:402px;width:280px;transform:rotate(285deg);"></div>
+          <div style="position:absolute;left:1000px;top:300px;font-size:26px;width:200px;">Make the board fullscreen.</div>
+          <div class="helpPointer" style="left:928px;top:282px;width:70px;transform:rotate(210deg);"></div>
+        </div>
+      </div>
+      <div class="flexCenter" id="howToUseBasics2">
+        <div style="text-align:center;">
+          <p style="font-size:26px;">&nbsp;</p>
+          <p><img src="./assets/img/BingoScreenshot2.png" width="600" style="box-shadow:3px 3px 10px rgba(0,0,0,0.6);"></p>
+          <div style="position:absolute;left:90px;top:240px;font-size:26px;width:200px;">Change how the board looks.</div>
+          <div class="helpPointer" style="left:295px;top:275px;width:96px;transform:rotate(347deg);"></div>
+          <div style="position:absolute;left:85px;top:370px;font-size:26px;width:210px;">Toggle the balls drawn/remaining counter.</div>
+          <div class="helpPointer" style="left:282px;top:470px;width:90px;transform:rotate(18deg);"></div>
+          <div style="position:absolute;left:60px;top:520px;font-size:26px;width:240px;">Hide the board for a tougher game.</div>
+          <div class="helpPointer" style="left:300px;top:563px;width:78px;"></div>
+          <div style="position:absolute;left:1000px;top:300px;font-size:26px;width:210px;">Manually edit the board if you're drawing balls separately.</div>
+          <div class="helpPointer" style="left:910px;top:312px;width:90px;transform:rotate(200deg);"></div>
+          <div class="helpPointer" style="left:833px;top:402px;width:162px;transform:rotate(165deg);"></div>
+        </div>
+      </div>
+      <div class="flexCenter" id="howToUseTipsTricks">
+        <div style="text-align:center;">
+          <p style="font-size:27px;"><strong>Use keyboard shortcuts.</strong></p>
+          <p class="smallMargin" style="font-size:27px;">Draw balls with the <strong>space bar</strong>.</p>
+          <p class="smallMargin" style="font-size:27px;">Reset the board with the <strong>r key</strong>.</p>
+          <p style="font-size:23px;margin:1.5em 0 0.5em 0;"><strong>Other Shortcuts</strong></p>
+          <div style="display:flex;align-items:center;justify-content:center;">
+            <div>
+              <p class="smallMargin" style="font-size:23px;"><strong>f</strong> - Toggle fullscreen</p>
+              <p class="smallMargin" style="font-size:23px;"><strong>t</strong> - Go to Themes page</p>
+              <p class="smallMargin" style="font-size:23px;"><strong>w</strong> - Go to Winning Pattern page</p>
+            </div>
+            <div style="width:30px;"></div>
+            <div>
+              <p class="smallMargin" style="font-size:23px;"><strong>enter</strong> - Go to master board from title</p>
+              <p class="smallMargin" style="font-size:23px;"><strong>v</strong> - Toggle balls drawn/remaining</p>
+              <p class="smallMargin" style="font-size:23px;"><strong>x</strong> - Hide/show board</p>
+            </div>
+          </div>
+          <p style="font-size:23px;">Add <em>?masterboard</em> to the end of the URL to quickly load the master board.</p>
+        </div>
+      </div>
+      <div class="flexCenter" id="howToUseThanks">
+        <div style="text-align:center;font-size:26px;">
+          <p>Thanks for using Bingo Master Board! I really appreciate it.</p>
+          <p><em>~Games by Kai Yang</em></p>
+        </div>
+      </div>
+    </div>
+    <div class="helpFooter">
+      <div class="helpFooterLabel" onclick="hide('howToUseSlide');show('titleSlide');">
+        <em>Main Menu</em>
+      </div>
+    </div>
+  </div>
+
+  <div id="aboutCreditsSlide">
+    <h2>About/Credits</h2>
+    <div class="creditsNav">
+      <div id="creditsNavLine"></div>
+      <div class="creditsNavText boldHelp" onclick="creditsHelp('About');" id="creditsAboutHeader">About</div>
+      <div class="creditsNavText" onclick="creditsHelp('Credits');" id="creditsCreditsHeader">Credits</div>
+    </div>
+    <div class="helpLine"></div>
+    <div class="helpContent">
+      <div class="flexCenter" id="creditsAbout" style="display:flex;">
+        <div class="twoSections">
+          <div>
+            <div class="flexCenter" style="flex-direction:column;">
+              <img src="./assets/img/appIcon.svg" width="300" style="box-shadow:5px 5px 10px rgba(0,0,0,0.25);border-radius:20px;">
+              <p><em> E Board</em></p>
+            </div>
+          </div>
+          <div>
+            <div class="flexCenter" style="flex-direction:column;font-size:24px;line-height:1.8;">
+              <span style="margin-bottom:0.8em;font-size:26px;"><strong>Version 3.0.1</strong></span>
+              <span><strong>Creator:</strong> Siow Kai Yang</span>
+              <span><strong>Updated:</strong> 2nd July 2021</span>
+              <span><strong>License:</strong> <a href="./LICENSE" target="_blank" rel="noopener">E Licence</a></span>
+
+              <span style="margin-top:0.8em;text-align:center;">For more projects by the creator, visit<br>
+                    <a href="https://github.com/0xkermit" target="_blank" rel="noopener"><strong>This Link</strong></a>.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flexCenter" style="flex-direction:column;font-size:24px;" id="creditsCredits">
+        <p><strong>Games by Kai Yang</strong> would like to thank:</p>
+        <div class="twoSections" style="grid-template-columns:1fr 50px 1fr;">
+          <div>
+            <div style="display:flex;align-items:center;justify-content:center;">
+              <div>
+                <p><strong>Unity</strong>, the program that got me started with games.</p>
+                <p><strong>W3C</strong> for teaching me Web development skills utilized in this project</p>
+                <p><strong>Siow Kai Yang</strong> for creating 75-ball Bingo</p>
+                <p><strong>My Mother</strong> for supporting me through the tough stages of development</p>
+              </div>
+            </div>
+          </div>
+          <div></div>
+          <div>
+            <div style="display:flex;align-items:center;justify-content:center;">
+              <div>
+                <p><strong>You</strong> for using Bingo Master Board AND viewing the credits. You're awesome!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="helpFooter">
+      <div class="helpFooterLabel" onclick="hide('aboutCreditsSlide');show('titleSlide');">
+        Main Menu
+      </div>
+    </div>
+  </div>
+
+  <div id="onboardingSlide">
+    <div class="flexCenter" style="text-align:center;">
+      <div>
+        <h3 style="margin-top:0.5em;">Welcome to <span style="color:#00a4ff;">Bingo</span> <span style="color:#948a54;">Master Board</span></h3>
+        <p class="smallMargin">
+          <img src="./assets/img/Onboarding.png" alt="onboarding" width="650">
+        </p>
+        <p class="smallMargin" style="font-size:24px;"><strong>Host and manage</strong> Bingo games.</p>
+        <p class="smallMargin" style="font-size:24px;"><strong>Randomly draw</strong> Bingo balls. <strong>Set your own</strong> winning pattern and look.</p>
+        <div class="helpFooterLabel" style="display:block;margin-top:1em;" onclick="hide('onboardingSlide');show('titleSlide');">
+          Begin
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="masterBoardSlide">
+    <div id="blocker"></div>
+    <div class="controlsCol">
+      <div style="margin:-6px 0 0 28px;">
+        <span class="smallButton" id="reset" onclick="resetBoard();">Reset</span>
+        <span class="smallButton" id="themes" onclick="hide('masterBoardSlide');show('settingsSlide', 'grid');">Themes</span>
+      </div>
+      <div class="winningPatternDiv">
+        <div class="bingoCard" onclick="hide('masterBoardSlide');show('winningPatternSlide', 'grid');">
+          <div class="bingoCardHeader">B</div>
+          <div class="bingoCardHeader">I</div>
+          <div class="bingoCardHeader">N</div>
+          <div class="bingoCardHeader">G</div>
+          <div class="bingoCardHeader">O</div>
+          <div class="bingoCardBody" id="1card"></div>
+          <div class="bingoCardBody" id="6card"></div>
+          <div class="bingoCardBody" id="11card"></div>
+          <div class="bingoCardBody" id="16card"></div>
+          <div class="bingoCardBody" id="21card"></div>
+          <div class="bingoCardBody" id="2card"></div>
+          <div class="bingoCardBody" id="7card"></div>
+          <div class="bingoCardBody" id="12card"></div>
+          <div class="bingoCardBody" id="17card"></div>
+          <div class="bingoCardBody" id="22card"></div>
+          <div class="bingoCardBody" id="3card"></div>
+          <div class="bingoCardBody" id="8card"></div>
+          <div class="bingoCardBody" id="13card"></div>
+          <div class="bingoCardBody" id="18card"></div>
+          <div class="bingoCardBody" id="23card"></div>
+          <div class="bingoCardBody" id="4card"></div>
+          <div class="bingoCardBody" id="9card"></div>
+          <div class="bingoCardBody" id="14card"></div>
+          <div class="bingoCardBody" id="19card"></div>
+          <div class="bingoCardBody" id="24card"></div>
+          <div class="bingoCardBody" id="5card"></div>
+          <div class="bingoCardBody" id="10card"></div>
+          <div class="bingoCardBody" id="15card"></div>
+          <div class="bingoCardBody" id="20card"></div>
+          <div class="bingoCardBody" id="25card"></div>
+        </div>
+      </div>
+      <div class="bigBingoBallClass" id="bigBingoBall" onclick="toggleBallsDrawnRemaining('toggle');">
+        <div id="bigBingoLetter">&nbsp;</div>
+        <div id="bigBingoNumber">&nbsp;</div>
+      </div>
+      <div id="ballsDrawnRemaining">
+            <span id="ballsDrawn">
+              <span id="ballsDrawnNum" style="font-size:38px;font-weight:700;"></span>
+               &nbsp;drawn
+            </span>
+        <span id="ballsRemaining">
+              <span id="ballsRemainingNum" style="font-size:38px;font-weight:700;"></span>
+               &nbsp;remaining
+           </span>
+      </div>
+      <div class="boardToggle" id="hideBoard" onclick="toggleBlocker()">Hide Board</div>
+      <div class="boardToggle" id="showBoard" onclick="toggleBlocker()">Show Board</div>
+    </div>
+    <div class="bingoCol bCol">
+      <div class="bingoLetter" onclick="hideBingo('B', 'toggle');">
+        <div id="bingoB">B</div>
+      </div>
+      <div class="bingoBalls" id="bingoBallsB">
+        <div class="bingoBall" id="1bingo">1</div>
+        <div class="bingoBall" id="2bingo">2</div>
+        <div class="bingoBall" id="3bingo">3</div>
+        <div class="bingoBall" id="4bingo">4</div>
+        <div class="bingoBall" id="5bingo">5</div>
+        <div class="bingoBall" id="6bingo">6</div>
+        <div class="bingoBall" id="7bingo">7</div>
+        <div class="bingoBall" id="8bingo">8</div>
+        <div class="bingoBall" id="9bingo">9</div>
+        <div class="bingoBall" id="10bingo">10</div>
+        <div class="bingoBall" id="11bingo">11</div>
+        <div class="bingoBall" id="12bingo">12</div>
+        <div class="bingoBall" id="13bingo">13</div>
+        <div class="bingoBall" id="14bingo">14</div>
+        <div class="bingoBall" id="15bingo">15</div>
+      </div>
+    </div>
+    <div class="bingoCol iCol">
+      <div class="bingoLetter" onclick="hideBingo('I', 'toggle');">
+        <div id="bingoI">I</div>
+      </div>
+      <div class="bingoBalls" id="bingoBallsI">
+        <div class="bingoBall" id="16bingo">16</div>
+        <div class="bingoBall" id="17bingo">17</div>
+        <div class="bingoBall" id="18bingo">18</div>
+        <div class="bingoBall" id="19bingo">19</div>
+        <div class="bingoBall" id="20bingo">20</div>
+        <div class="bingoBall" id="21bingo">21</div>
+        <div class="bingoBall" id="22bingo">22</div>
+        <div class="bingoBall" id="23bingo">23</div>
+        <div class="bingoBall" id="24bingo">24</div>
+        <div class="bingoBall" id="25bingo">25</div>
+        <div class="bingoBall" id="26bingo">26</div>
+        <div class="bingoBall" id="27bingo">27</div>
+        <div class="bingoBall" id="28bingo">28</div>
+        <div class="bingoBall" id="29bingo">29</div>
+        <div class="bingoBall" id="30bingo">30</div>
+      </div>
+    </div>
+    <div class="bingoCol nCol">
+      <div class="bingoLetter" onclick="hideBingo('N', 'toggle');">
+        <div id="bingoN">N</div>
+      </div>
+      <div class="bingoBalls" id="bingoBallsN">
+        <div class="bingoBall" id="31bingo">31</div>
+        <div class="bingoBall" id="32bingo">32</div>
+        <div class="bingoBall" id="33bingo">33</div>
+        <div class="bingoBall" id="34bingo">34</div>
+        <div class="bingoBall" id="35bingo">35</div>
+        <div class="bingoBall" id="36bingo">36</div>
+        <div class="bingoBall" id="37bingo">37</div>
+        <div class="bingoBall" id="38bingo">38</div>
+        <div class="bingoBall" id="39bingo">39</div>
+        <div class="bingoBall" id="40bingo">40</div>
+        <div class="bingoBall" id="41bingo">41</div>
+        <div class="bingoBall" id="42bingo">42</div>
+        <div class="bingoBall" id="43bingo">43</div>
+        <div class="bingoBall" id="44bingo">44</div>
+        <div class="bingoBall" id="45bingo">45</div>
+      </div>
+    </div>
+    <div class="bingoCol gCol">
+      <div class="bingoLetter" onclick="hideBingo('G', 'toggle');">
+        <div id="bingoG">G</div>
+      </div>
+      <div class="bingoBalls" id="bingoBallsG">
+        <div class="bingoBall" id="46bingo">46</div>
+        <div class="bingoBall" id="47bingo">47</div>
+        <div class="bingoBall" id="48bingo">48</div>
+        <div class="bingoBall" id="49bingo">49</div>
+        <div class="bingoBall" id="50bingo">50</div>
+        <div class="bingoBall" id="51bingo">51</div>
+        <div class="bingoBall" id="52bingo">52</div>
+        <div class="bingoBall" id="53bingo">53</div>
+        <div class="bingoBall" id="54bingo">54</div>
+        <div class="bingoBall" id="55bingo">55</div>
+        <div class="bingoBall" id="56bingo">56</div>
+        <div class="bingoBall" id="57bingo">57</div>
+        <div class="bingoBall" id="58bingo">58</div>
+        <div class="bingoBall" id="59bingo">59</div>
+        <div class="bingoBall" id="60bingo">60</div>
+      </div>
+    </div>
+    <div class="bingoCol oCol">
+      <div class="bingoLetter" onclick="hideBingo('O', 'toggle');">
+        <div id="bingoO">O</div>
+      </div>
+      <div class="bingoBalls" id="bingoBallsO">
+        <div class="bingoBall" id="61bingo">61</div>
+        <div class="bingoBall" id="62bingo">62</div>
+        <div class="bingoBall" id="63bingo">63</div>
+        <div class="bingoBall" id="64bingo">64</div>
+        <div class="bingoBall" id="65bingo">65</div>
+        <div class="bingoBall" id="66bingo">66</div>
+        <div class="bingoBall" id="67bingo">67</div>
+        <div class="bingoBall" id="68bingo">68</div>
+        <div class="bingoBall" id="69bingo">69</div>
+        <div class="bingoBall" id="70bingo">70</div>
+        <div class="bingoBall" id="71bingo">71</div>
+        <div class="bingoBall" id="72bingo">72</div>
+        <div class="bingoBall" id="73bingo">73</div>
+        <div class="bingoBall" id="74bingo">74</div>
+        <div class="bingoBall" id="75bingo">75</div>
+      </div>
+    </div>
+    <!--Workaround to fix Bingo ball jumping bug in Chrome-->
+    <div style="visibility:hidden;">
+      <div class="bingoBallActiveB">a</div>
+      <div class="bingoBallActiveI">a</div>
+      <div class="bingoBallActiveN">a</div>
+      <div class="bingoBallActiveG">a</div>
+      <div class="bingoBallActiveO">a</div>
+    </div>
+    <!--End-->
+  </div>
+
+  <div id="settingsSlide">
+    <h2>Themes</h2>
+    <div class="helpContent">
+      <div class="flexCenter">
+        <div style="text-align:center;">
+          <p><strong>Background</strong></p>
+          <p class="themeSelection">
+            <span class="themeColor" id="classic" onclick="changeBackgroundColor('classic');">Classic</span>
+            <span class="themeColor" id="red" onclick="changeBackgroundColor('red');">Red</span>
+            <span class="themeColor" id="green" onclick="changeBackgroundColor('green');">Green</span>
+          </p>
+          <p class="themeSelection" style="margin-bottom:1.5em;">
+            <span class="themeColor" id="blue" onclick="changeBackgroundColor('blue');">Blue</span>
+            <span class="themeColor" id="purple" onclick="changeBackgroundColor('purple');">Purple</span>
+          </p>
+          <p><strong>Bingo Numbers</strong></p>
+          <p style="display:flex;justify-content:center;">
+                <span id="bingoStyleBall" onclick="changeBingoStyle('ball');">
+                  <span class="bingoBallBall bingoBallBallActiveB">15</span>
+                </span>&nbsp;&nbsp;&nbsp;
+            <span id="bingoStyleVintage" onclick="changeBingoStyle('vintage');">
+                  <span class="bingoBallVintage bingoBallVintageActive">15</span>
+                </span>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="helpFooter">
+      <div class="helpFooterLabel" onclick="hide('settingsSlide');show('masterBoardSlide', 'grid');">
+        Go Back
+      </div>
+    </div>
+  </div>
+
+  <div id="winningPatternSlide">
+    <h2>Winning Pattern</h2>
+    <div class="helpContent">
+      <div class="flexCenter">
+        <div class="bigBingoCard">
+          <div class="bingoCardHeader bigBingoCardHeader">B</div>
+          <div class="bingoCardHeader bigBingoCardHeader">I</div>
+          <div class="bingoCardHeader bigBingoCardHeader">N</div>
+          <div class="bingoCardHeader bigBingoCardHeader">G</div>
+          <div class="bingoCardHeader bigBingoCardHeader">O</div>
+          <div class="bingoCardBody bigBingoCardBody" id="1bigcard" onclick="toggleWinningPattern(1);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="6bigcard" onclick="toggleWinningPattern(6);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="11bigcard" onclick="toggleWinningPattern(11);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="16bigcard" onclick="toggleWinningPattern(16);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="21bigcard" onclick="toggleWinningPattern(21);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="2bigcard" onclick="toggleWinningPattern(2);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="7bigcard" onclick="toggleWinningPattern(7);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="12bigcard" onclick="toggleWinningPattern(12);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="17bigcard" onclick="toggleWinningPattern(17);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="22bigcard" onclick="toggleWinningPattern(22);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="3bigcard" onclick="toggleWinningPattern(3);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="8bigcard" onclick="toggleWinningPattern(8);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="13bigcard" onclick="toggleWinningPattern(13);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="18bigcard" onclick="toggleWinningPattern(18);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="23bigcard" onclick="toggleWinningPattern(23);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="4bigcard" onclick="toggleWinningPattern(4);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="9bigcard" onclick="toggleWinningPattern(9);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="14bigcard" onclick="toggleWinningPattern(14);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="19bigcard" onclick="toggleWinningPattern(19);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="24bigcard" onclick="toggleWinningPattern(24);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="5bigcard" onclick="toggleWinningPattern(5);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="10bigcard" onclick="toggleWinningPattern(10);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="15bigcard" onclick="toggleWinningPattern(15);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="20bigcard" onclick="toggleWinningPattern(20);"></div>
+          <div class="bingoCardBody bigBingoCardBody" id="25bigcard" onclick="toggleWinningPattern(25);"></div>
+        </div>
+        <div>
+          <div class="winningPatternNames">
+            <div class="winningName" onclick="winningPatternFromName();">No Pattern</div>
+            <div class="winningName" onclick="winningPatternFromName(1,5,21,25);">Four Corners</div>
+            <div class="winningName" onclick="winningPatternFromName(5,7,8,9,10,12,13,14,15,17,18,19,20,25);">Top Hat</div>
+            <div class="winningName" onclick="winningPatternFromName(1,2,3,4,5,10,15,20,25);">Letter L</div>
+            <div class="winningName" onclick="winningPatternFromName(7,8,9,12,14,17,18,19);">Frame Inside</div>
+            <div class="winningName" onclick="winningPatternFromName(3,7,8,11,12,13,14,15,17,18,23);">Tree</div>
+            <div class="winningName" onclick="winningPatternFromName(1,6,11,12,13,14,15,16,21);">Letter T</div>
+            <div class="winningName" onclick="winningPatternFromName(1,2,3,4,5,6,10,11,15,16,20,21,22,23,24,25);">Frame Outside</div>
+            <div class="winningName" onclick="winningPatternFromName(1,2,3,8,11,13,14,15,18,21,22,23);">Field Goal</div>
+            <div class="winningName" onclick="winningPatternFromName(1,5,7,9,13,17,19,21,25);">Letter X</div>
+            <div class="winningName" onclick="winningPatternFromName(3,8,11,12,13,14,15,18,23);">Plus Sign</div>
+            <div class="winningName" onclick="winningPatternFromName(3,7,9,11,15,17,19,23);">Diamond</div>
+            <div class="winningName" onclick="winningPatternFromName(1,7,13,14,15,17,21);">Letter Y</div>
+            <div class="winningName" onclick="winningPatternFromName(1,5,6,9,11,13,16,17,21);">Lucky 7</div>
+            <div class="winningName" onclick="winningPatternFromName(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25);">Blackout</div>
+          </div>
+          <div class="cardExplanation">
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="helpFooter">
+      <div class="helpFooterLabel" onclick="hideBingoLettersBasedOnWinningPattern();hide('winningPatternSlide');show('masterBoardSlide', 'grid');">
+        Go Back
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="./assets/js/featureChecker.js"></script>
+<script src="./assets/js/main.js"></script>
 
 </body>
 </html>
